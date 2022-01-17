@@ -1,35 +1,94 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
+    private static Statement statement;
+
+    {
+        try {
+            statement = Util.getUtil().getConnection().createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public UserDaoJDBCImpl() {
 
     }
 
     public void createUsersTable() {
-
+        try {
+            statement.execute("CREATE TABLE IF NOT EXISTS users (\n" +
+                    "  `id` INT NOT NULL AUTO_INCREMENT,\n" +
+                    "  `name` VARCHAR(40) NOT NULL,\n" +
+                    "  `lastName` VARCHAR(40) NOT NULL,\n" +
+                    "  `age` INT NOT NULL,\n" +
+                    "  PRIMARY KEY (`id`));");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void dropUsersTable() {
-
+        try {
+            statement.execute("DROP TABLE IF EXISTS users;");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-
+        try {
+            statement.execute("insert into users(name, lastName, age) values('"+ name + "', '" + lastName + "', " + age + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeUserById(long id) {
-
+        try {
+            statement.execute("delete from users where id = " + id + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<User> getAllUsers() {
-        return null;
+        ResultSet resultSet = null;
+        List<User> userList = new ArrayList<>();
+        try {
+            resultSet = statement.executeQuery("select * from users");
+
+            while (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setName(resultSet.getString("name"));
+                user.setLastName(resultSet.getString("lastName"));
+                user.setAge(resultSet.getByte("age"));
+
+                userList.add(user);
+                System.out.println(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userList;
     }
 
     public void cleanUsersTable() {
-
+        try {
+            statement.execute("delete from users");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

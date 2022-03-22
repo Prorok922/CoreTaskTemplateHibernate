@@ -5,10 +5,12 @@ import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.model.User;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
 //    UserDao userDao = new UserDaoJDBCImpl(); //jdbc
     UserDao userDao = new UserDaoHibernateImpl(); //hibernate
+    private static final Logger logger = Logger.getGlobal();
 
     public void createUsersTable() {
         userDao.createUsersTable();
@@ -20,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     public void saveUser(String name, String lastName, byte age) {
         userDao.saveUser(name, lastName, age);
-        System.out.println("User с именем – " + name + " добавлен в базу данных");
+        logger.info("User с именем – " + name + " добавлен в базу данных");
     }
 
     public void removeUserById(long id) {
